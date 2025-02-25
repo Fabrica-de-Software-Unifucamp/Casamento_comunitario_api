@@ -1,0 +1,26 @@
+# Ignorar logs do sistema e arquivos temporários
+*.log
+*.swp
+*.swo
+
+# Ignorar arquivos do Docker
+docker/php/vendor/
+docker/php/node_modules/
+docker/nginx/.vscode/
+docker-compose.override.yml
+
+# Ignorar banco de dados local
+mysql_data/
+
+# Ignorar arquivos de cache do PHP
+src/vendor/
+src/node_modules/
+src/composer.lock
+src/.env
+src/.vscode/
+src/.DS_Store
+.env
+
+# Ignorar arquivos gerados pelo sistema
+Thumbs.db
+.DS_Store
