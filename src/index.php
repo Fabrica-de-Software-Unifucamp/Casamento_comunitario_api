@@ -8,14 +8,12 @@ class CadastroConjuge {
     private $conn;
     private $cpf;
 
-    // Construtor que recebe a conexão PDO e o CPF
     public function __construct($cpf) {
         $config = new Config();
         $this->conn = $config->getConnection();
         $this->cpf = $cpf;
     }
 
-    // Função para enviar o arquivo
     private function enviarArquivo($error, $size, $name, $tmp_name) {
         $diretorio = "uploads/{$this->cpf}/";
         if (!is_dir($diretorio)) {
@@ -40,10 +38,8 @@ class CadastroConjuge {
         }
     }
 
-    // Função para cadastrar o cônjuge
     public function cadastrarConjuge($dadosConjuge) {
         try {
-            // Inserir dados do cônjuge na tabela Conjuge
             $stmt = $this->conn->prepare("INSERT INTO Conjuge (Nome, CPF, RG, Data_Nascimento, Estado_Civil, Numero, Rua, Bairro, Cidade, UF, CEP, Telefone1, Telefone2) 
                                           VALUES (:nome, :cpf, :rg, :dataNascimento, :estadoCivil, :numero, :rua, :bairro, :cidade, :uf, :cep, :telefone1, :telefone2)");
 
@@ -73,7 +69,6 @@ class CadastroConjuge {
         }
     }
 
-    // Função para cadastrar os documentos do cônjuge
     public function cadastrarDocumentos($idConjuge, $documentos) {
         try {
             $caminhoDocumentos = [];
@@ -112,42 +107,6 @@ class CadastroConjuge {
             }
         } catch (Exception $e) {
             echo json_encode(["status" => "error", "mensagem" => $e->getMessage()]);
-        }
-    }
-}
-
-// Exemplo de uso
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (isset($_POST['cpf'])) {
-        $cadastro = new CadastroConjuge($_POST['cpf']);
-        $dadosConjuge = [
-            'nome' => $_POST['nome'],
-            'rg' => $_POST['rg'],
-            'dataNascimento' => $_POST['dataNascimento'],
-            'estadoCivil' => $_POST['estadoCivil'],
-            'numero' => $_POST['numero'],
-            'rua' => $_POST['rua'],
-            'bairro' => $_POST['bairro'],
-            'cidade' => $_POST['cidade'],
-            'uf' => $_POST['uf'],
-            'cep' => $_POST['cep'],
-            'telefone1' => $_POST['telefone1'],
-            'telefone2' => $_POST['telefone2'],
-        ];
-        
-        // Cadastrar o cônjuge
-        $cadastro->cadastrarConjuge($dadosConjuge);
-
-        // Se houver documentos
-        if (isset($_FILES['certidao_nascimento']) || isset($_FILES['copia_identidade']) || isset($_FILES['copia_residencia']) || isset($_FILES['certidao_casamento']) || isset($_FILES['certidao_obito'])) {
-            $documentos = [
-                'certidao_nascimento' => $_FILES['certidao_nascimento'] ?? null,
-                'copia_identidade' => $_FILES['copia_identidade'] ?? null,
-                'copia_residencia' => $_FILES['copia_residencia'] ?? null,
-                'certidao_casamento' => $_FILES['certidao_casamento'] ?? null,
-                'certidao_obito' => $_FILES['certidao_obito'] ?? null,
-            ];
-            $cadastro->cadastrarDocumentos($cadastro->conn->lastInsertId(), $documentos);
         }
     }
 }
